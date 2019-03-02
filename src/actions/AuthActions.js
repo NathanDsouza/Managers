@@ -1,6 +1,6 @@
 import firebase from '@firebase/app';
 import {Actions} from 'react-native-router-flux';
-import 'firebase/auth';
+import '@firebase/auth'
 
 
 import {
@@ -35,7 +35,10 @@ export const loginUser = ({email, password}) =>{
                 console.log(error);
                 firebase.auth().createUserWithEmailAndPassword(email, password)
                 .then(user => loginUserSuccess(dispatch, user))
-                .catch(() => loginUserFail (dispatch));
+                .catch((error) =>{
+                    console.log(error);
+                    loginUserFail (dispatch, error);
+                })
             });
         };
 };
@@ -48,9 +51,10 @@ const loginUserSuccess = (dispatch, user) => {
     Actions.main();
 };
 
-const loginUserFail = (dispatch) => {
+const loginUserFail = (dispatch, error) => {
     dispatch({
         type: LOGIN_USER_FAIL,
+        payload: error.toString()
     });
 };
 

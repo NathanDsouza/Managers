@@ -1,18 +1,36 @@
 import React,{Component} from 'react';
-import {View, Text} from 'react-native';
+import {FlatList} from 'react-native';
+import {employeeFetch} from '../actions/EmployeeActions';
+import {connect} from 'react-redux';
+import _ from 'lodash';
+import ListItem from './ListItem';
 
 class EmployeeList extends Component {
+    componentWillMount(){
+        this.props.employeeFetch();
+    }
+
+    renderRow(employee){
+        return <ListItem employee = {employee} />;
+    }
     render(){
+        console.log(this.props);
         return(
-            <View>
-                <Text>Employee List</Text>
-                <Text>Employee List</Text>
-                <Text>Employee List</Text>
-                <Text>Employee List</Text>
-                <Text>Employee List</Text>
-            </View>
+            <FlatList
+                data={this.props.employee}
+                renderItem={this.renderRow}
+                keyExtractor={employee => employee.uid}
+                />
+             
         );
     }
 }
 
-export default EmployeeList;
+const mapStateToProps = state => {
+    const employee = _.map(state.employee, (val, uid) =>{
+        return {...val, uid};
+    });
+    return {employee};
+};
+
+export default connect(mapStateToProps, {employeeFetch})(EmployeeList);
